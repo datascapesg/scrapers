@@ -33,7 +33,8 @@ async function extractAllItems(url, rowMapper = r => r) {
       .map(row => childrenArray(row.children()))
       .map(rowMapper)
   }))
-  return Promise.all(pagePromises)
+  const pageItems = await Promise.all(pagePromises)
+  return [].concat(...pageItems)
 }
 
 module.exports = { PASSITON_HOST, extractAllItems }
