@@ -1,0 +1,24 @@
+{
+  "name": "@datascapesg/scrapers",
+  "version": "1.0.0",
+  "description": "All the scrapers used by datascapesg, hosted on Netlify",
+  "main": "index.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.9",
+    "got": "^11.8.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datascapesg/scrapers.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/datascapesg/scrapers/issues"
+  },
+  "homepage": "https://github.com/datascapesg/scrapers#readme"
+}
