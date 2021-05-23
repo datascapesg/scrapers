@@ -4,8 +4,10 @@
   "description": "All the scrapers used by datascapesg, hosted on Netlify",
   "main": "index.js",
   "dependencies": {
+    "@mapbox/togeojson": "^0.16.0",
     "cheerio": "^1.0.0-rc.9",
-    "got": "^11.8.2"
+    "got": "^11.8.2",
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {},
   "scripts": {
