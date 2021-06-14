@@ -16,7 +16,7 @@ async function extractBloodStocks(url) {
   const response = await got(url);
   const $ = cheerio.load(response.body)
 
-  let state = {}
+  let state = []
 
   for (const pos_neg of POS_NEG) {
     // Get the entire positive or negative blood type row
@@ -27,13 +27,11 @@ async function extractBloodStocks(url) {
       const classname = `.${BLOOD_GROUP_PREFIX}.${group["class_"]}`
       const bloodgroup_html = pos_or_negs.children(classname);
       const info_text = bloodgroup_html.find(".info_text")
-      const bloodtype = info_text.find(".status_text:nth-child(1)").text().split(' ')[0]
+      const bloodType = info_text.find(".status_text:nth-child(1)").text().split(' ')[0]
       const status = info_text.find(".status_text:nth-child(2)").text()
-      const fill_level = bloodgroup_html.find(".fill_humam").css('height')
-      // console.log(bloodtype);
-      // console.log(status);
-      // console.log(fill_level)
-      state[bloodtype] = {"status": status, "fill_level": fill_level}
+      const fillLevel = bloodgroup_html.find(".fill_humam").css('height')
+
+      state.push({ bloodType, status, fillLevel })
     }
   }
   return state
@@ -50,7 +48,3 @@ exports.handler = async function () {
   return await runExtracter();
 }
 
-// For testing
-// runExtracter().then((data) => {
-//     console.log(data)
-// })
