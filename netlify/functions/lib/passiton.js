@@ -21,8 +21,11 @@ async function extractAllItems(url, rowMapper = r => r) {
   const pageCount = extractPageCount(response.body)
   // generate the urls of pages to be fetched, typically
   // pages 2 to `pageCount`
-  const pageUrls = new Array(pageCount - 1).fill(0)
-    .map((_v, i) => `${url}?pg=${i + 2}`)
+  const pageUrls = pageCount 
+    ? new Array(pageCount - 1)
+      .fill(0)
+      .map((_v, i) => `${url}${url.includes('?')  ? '&' : '?' }pg=${i + 2}`)
+    : []
   const pagePromises = [
     Promise.resolve(response.body),
     ...pageUrls.map(url => got(url).then((response) => response.body))
@@ -37,4 +40,20 @@ async function extractAllItems(url, rowMapper = r => r) {
   return [].concat(...pageItems)
 }
 
-module.exports = { PASSITON_HOST, extractAllItems }
+async function extractRequestsByCategory(url, rowCategoryMapper = c => r => r) {
+  const response = await got(url)
+  const $ = cheerio.load(response.body)
+  const categories = childrenArray($('form .tbl_form td[colspan=7] a'))
+    .map((c)=> c.text())
+  const pageItems = await Promise.all(
+    categories.map(
+      category => extractAllItems(
+        `${url}?cat=${category}`, 
+        rowCategoryMapper(category)
+      )
+    )
+  )
+  return [].concat(...pageItems)
+}
+
+module.exports = { PASSITON_HOST, extractAllItems, extractRequestsByCategory }
