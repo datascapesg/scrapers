@@ -1,5 +1,5 @@
 const got = require('got')
-const xmldom = require('xmldom')
+const xmldom = require('@xmldom/xmldom')
 const toGeoJSON = require('@mapbox/togeojson')
 
 exports.handler = async function ({ queryStringParameters }) {
