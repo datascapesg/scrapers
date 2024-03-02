@@ -1,16 +1,6 @@
 const got = require('got')
 const cheerio = require('cheerio')
 const REDCROSS_HOST = "https://www.redcross.sg"
-const BLOOD_BANK_LVL = "blood_bank_level"
-const POS_NEG = [{"class_": "positives", "name": "+"}, {"class_": "negatives", "name": "-"}]
-const BLOOD_GROUP_PREFIX = "blood_group"
-const BLOOD_GROUPS = [
-  {"class_": "a_group", "name": "A"},
-  {"class_": "b_group", "name": "B"},
-  {"class_": "o_group", "name": "O"},
-  {"class_": "ab_group", "name": "AB"},
-]
-
 
 async function extractBloodStocks(url) {
   const response = await got(url);
@@ -18,24 +8,25 @@ async function extractBloodStocks(url) {
 
   let state = []
 
-  for (const pos_neg of POS_NEG) {
-    // Get the entire positive or negative blood type row
-    const classname = `.${BLOOD_BANK_LVL}.${pos_neg["class_"]}`
-    const pos_or_negs = $(classname)
-    for (const group of BLOOD_GROUPS) {
-      // Get data for individual blood types
-      const classname = `.${BLOOD_GROUP_PREFIX}.${group["class_"]}`
-      const bloodgroup_html = pos_or_negs.children(classname);
-      const info_text = bloodgroup_html.find(".info_text")
-      const bloodType = info_text.find(".status_text:nth-child(1)").text().split(' ')[0]
-      const status = info_text.find(".status_text:nth-child(2)").text()
-      const fillLevel = bloodgroup_html.find(".fill_humam").css('height')
+  const bloodTypes = [...$('.blood-grp-img h3')]
+    .map(n => n.children[0].data.trim())
+  const statuses = [...$('.blood-grp-img h5[class]')]
+    .map(n => n.children[0].data.trim())
+  const fillLevels = [...$('.blood-grp-img .blood-grp-hover')]
+    .map(
+      ({ childNodes }) => [...childNodes].find(
+        d => d.nodeType === 8).data.trim() + '%'
+    )
 
-      state.push({ bloodType, status, fillLevel })
-    }
+
+  for (let i = 0; i < bloodTypes.length; ++i) {
+    const bloodType = bloodTypes[i]
+    const status = statuses[i]
+    const fillLevel = fillLevels[i]
+    state.push({ bloodType, status, fillLevel })
   }
+
   return state
-  
 }
 
 async function runExtracter() {
