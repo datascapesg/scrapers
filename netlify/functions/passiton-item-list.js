@@ -17,6 +17,25 @@ function mapOffer([idCell, detailsCell, locationCell, _pictureCell, specificatio
 }
 
 exports.handler = async function () {
-  const result = await extractAllItems(`${PASSITON_HOST}/item-list`, mapOffer)
+  const result = (await Promise.all(
+    [
+      'Attires/Clothings',
+      'Electrical Home Appliances',
+      'Home Furnishing',
+      'Infant and Children Items',
+      'Kitchen Utility Items',
+      'Leisure and Healthy Lifestyle',
+      'Learning Aids',
+      'Medical Aids',
+      'Mobility Aids',
+      'Others',
+    ].map(async (category) => {
+      const offers = await extractAllItems(
+        `${PASSITON_HOST}/item-list?ItemCat1=${encodeURIComponent(category)}`,
+        mapOffer
+      )
+      return offers.map((offer) => ({ ...offer, category }))
+    })
+  )).flat()
   return { statusCode: 200, body: JSON.stringify(result, null, 2) }
 }
